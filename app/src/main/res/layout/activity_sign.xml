@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <me.itangqi.waveloadingview.WaveLoadingView
+        android:id="@+id/wave_view"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        app:wlv_borderWidth="5dp"
+        android:rotation="180"
+        app:wlv_progressValue="90"
+        app:wlv_shapeType="rectangle"
+        app:wlv_round_rectangle="false"
+        app:wlv_titleCenterStrokeColor="@android:color/holo_blue_dark"
+        app:wlv_waveAmplitude="20"
+        app:wlv_waveColor="@android:color/holo_blue_light"/>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="10dp"
+        tools:layout_editor_absoluteX="8dp"
+        android:layout_below="@+id/wave_view"
+        android:layout_marginBottom="100dp"/>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_blue_light"
+        android:layout_alignParentBottom="true"/>
+</RelativeLayout>

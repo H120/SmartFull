@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/qrlayout">
+
+        <FrameLayout
+            android:id="@+id/qrscannerfragment_holder"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@android:color/white"/>
+
+        <Button
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:id="@+id/qrrefresh"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/refresh_icon2"
+            android:gravity="center_vertical|center_horizontal"
+            android:layout_below="@+id/qrscannerfragment_holder"
+            android:visibility="invisible"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/namelayout"
+        android:layout_below="@+id/qrlayout"
+        android:layout_centerVertical="true"
+        android:paddingHorizontal="10dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/adddevice_identity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Identity">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/text_adddevice_identity"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/adddevice_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Device Name"
+            android:layout_below="@id/adddevice_identity">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/text_adddevice_name" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/adddevice_latitude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/adddevice_name"
+            android:hint="latitude">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/text_adddevice_latitude"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/adddevice_longitude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="longitude"
+            android:layout_below="@id/adddevice_latitude">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/text_adddevice_longitude" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/adddevice_location"
+            android:layout_below="@+id/adddevice_longitude"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="30dp"
+            android:text="Map"
+            android:background="@android:color/holo_blue_light"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/adddevice_add"
+            android:layout_below="@+id/adddevice_location"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:text="Add"
+            android:background="@android:color/holo_blue_light"/>
+
+
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>
