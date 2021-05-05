@@ -188,9 +188,6 @@ public class SignInFragment extends Fragment {
                             Log.e("message", "failure");
                         }
 
-
-
-
                     } catch (final JSONException e) {
                         Log.e("TAG", "Json parsing error: " + e.getMessage());
                         getActivity().runOnUiThread(new Runnable() {
@@ -206,7 +203,6 @@ public class SignInFragment extends Fragment {
 
                 }
 
-
             }
 
             @Override
@@ -217,4 +213,5 @@ public class SignInFragment extends Fragment {
         });
 
     }
+
 }

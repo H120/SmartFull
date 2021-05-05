@@ -62,13 +62,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Toolbar toolbar;
     private NavigationView nvDrawer;
     private ActionBarDrawerToggle drawerToggle;
-    RelativeLayout carinfo_relativelayout;
-    TextView tv_detail_car_detail, tv_date_car_detail, tv_name_car_detail, tv_degree_car_detail,
-            tv_speed_car_detail, tv_online_car_detail, tv_door_car_detail;
-    int open_car_info_speed;
-    RelativeLayout rl_carinfo_mainactivitybottom;
-    boolean carinfo_layout_is_open = false;
-    ImageView iv_close_carinfo_mainactivitybottom;
+    RelativeLayout info_relativelayout;
+    TextView tv_detail_detail, tv_date_detail, tv_name_detail, tv_degree_detail,
+            tv_speed_detail, tv_online_detail, tv_door_detail;
+    int open_info_speed;
+    RelativeLayout rl_info_mainactivitybottom;
+    boolean info_layout_is_open = false;
+    ImageView iv_close_info_mainactivitybottom;
     String current_id, current_name, current_log, current_identity,current_created_at, current_updated_at;
     double current_lat,current_lon;
     private long pressedTime;
@@ -126,25 +126,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         getlocation =(Button)findViewById(R.id.getlocation);
         qrreader =(Button)findViewById(R.id.qrreader);
-        carinfo_relativelayout = (RelativeLayout) findViewById(R.id.carinforelativelayout);
-        tv_date_car_detail = (TextView) findViewById(R.id.tv_date_car_detail);
-        tv_name_car_detail = (TextView) findViewById(R.id.tv_name_car_detail);
-        tv_detail_car_detail = (TextView) findViewById(R.id.tv_detail_car_detail);
-        rl_carinfo_mainactivitybottom = (RelativeLayout) findViewById(R.id.rl_carinfo_mainactivitybottom);
-        iv_close_carinfo_mainactivitybottom = (ImageView) findViewById(R.id.iv_close_carinfo_mainactivitybottom);
+        info_relativelayout = (RelativeLayout) findViewById(R.id.inforelativelayout);
+        tv_date_detail = (TextView) findViewById(R.id.tv_date_detail);
+        tv_name_detail = (TextView) findViewById(R.id.tv_name_detail);
+        tv_detail_detail = (TextView) findViewById(R.id.tv_detail_detail);
+        rl_info_mainactivitybottom = (RelativeLayout) findViewById(R.id.rl_info_mainactivitybottom);
+        iv_close_info_mainactivitybottom = (ImageView) findViewById(R.id.iv_close_info_mainactivitybottom);
         ll_delete_device = (LinearLayout) findViewById(R.id.ll_delete_device);
 
         setuserdata();
 
-        iv_close_carinfo_mainactivitybottom.setOnClickListener(new View.OnClickListener() {
+        iv_close_info_mainactivitybottom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
             {
-                if (carinfo_layout_is_open)
+                if (info_layout_is_open)
                 {
-                    Closecarinfobottomwithanimation(true, true);
-                    carinfo_layout_is_open = false;
-                    rl_carinfo_mainactivitybottom.setClickable(false);
+                    Closeinfobottomwithanimation(true, true);
+                    info_layout_is_open = false;
+                    rl_info_mainactivitybottom.setClickable(false);
                 }
             }
         });
@@ -354,12 +354,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 current_lon=markerList.get(menuItem.getItemId()).lon;
                 current_created_at=markerList.get(menuItem.getItemId()).created_at;
                 current_updated_at=markerList.get(menuItem.getItemId()).updated_at;
-                if (carinfo_layout_is_open)
+                if (info_layout_is_open)
                 {
-                    Closecarinfobottomwithanimation(false, false);
+                    Closeinfobottomwithanimation(false, false);
                 } else
                 {
-                    Opencarinfobottomwithanimation();
+                    Openinfobottomwithanimation();
                 }
                 LatLng lastmarker = new LatLng(markerList.get(menuItem.getItemId()).lon,markerList.get(menuItem.getItemId()).lat);
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(lastmarker));
@@ -414,23 +414,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return super.onOptionsItemSelected(item);
     }
 
-    void Opencarinfobottomwithanimation()
+    void Openinfobottomwithanimation()
     {
 
         try
         {
-            tv_date_car_detail.setText(current_id);
-            tv_name_car_detail.setText(current_name);
-            tv_detail_car_detail.setText(current_updated_at);
+            tv_date_detail.setText(current_id);
+            tv_name_detail.setText(current_name);
+            tv_detail_detail.setText(current_updated_at);
         } catch (Exception e)
         {
         }
-        carinfo_relativelayout.setVisibility(View.VISIBLE);
+        info_relativelayout.setVisibility(View.VISIBLE);
 
-        TranslateAnimation translateAnimation = new TranslateAnimation(0, 0, carinfo_relativelayout.getHeight(), 0);
-        translateAnimation.setDuration(open_car_info_speed);
+        TranslateAnimation translateAnimation = new TranslateAnimation(0, 0, info_relativelayout.getHeight(), 0);
+        translateAnimation.setDuration(open_info_speed);
         translateAnimation.setFillAfter(true);
-        carinfo_relativelayout.startAnimation(translateAnimation);
+        info_relativelayout.startAnimation(translateAnimation);
         translateAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation)
@@ -442,8 +442,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onAnimationEnd(Animation animation)
             {
 
-                rl_carinfo_mainactivitybottom.setClickable(true);
-                carinfo_layout_is_open = true;
+                rl_info_mainactivitybottom.setClickable(true);
+                info_layout_is_open = true;
             }
 
             @Override
@@ -455,13 +455,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
-    void Closecarinfobottomwithanimation(final boolean closemanualy, final boolean isfirst)
+    void Closeinfobottomwithanimation(final boolean closemanualy, final boolean isfirst)
     {
 
-        TranslateAnimation translateAnimation = new TranslateAnimation(0, 0, 0, carinfo_relativelayout.getHeight());
-        translateAnimation.setDuration(open_car_info_speed);
+        TranslateAnimation translateAnimation = new TranslateAnimation(0, 0, 0, info_relativelayout.getHeight());
+        translateAnimation.setDuration(open_info_speed);
         translateAnimation.setFillAfter(true);
-        carinfo_relativelayout.startAnimation(translateAnimation);
+        info_relativelayout.startAnimation(translateAnimation);
 
         translateAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -474,13 +474,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onAnimationEnd(Animation animation)
 
             {
-                carinfo_layout_is_open = false;
+                info_layout_is_open = false;
                 if (!isfirst && !closemanualy)
                 {
-                    Opencarinfobottomwithanimation();
+                    Openinfobottomwithanimation();
                 } else
                 {
-                    carinfo_relativelayout.setVisibility(View.GONE);
+                    info_relativelayout.setVisibility(View.GONE);
                 }
             }
 
@@ -506,12 +506,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             current_created_at=markerList.get(clickCount).created_at;
             current_updated_at=markerList.get(clickCount).updated_at;
 
-            if (carinfo_layout_is_open)
+            if (info_layout_is_open)
             {
-                Closecarinfobottomwithanimation(false, false);
+                Closeinfobottomwithanimation(false, false);
             } else
             {
-                Opencarinfobottomwithanimation();
+                Openinfobottomwithanimation();
             }
             Log.i("TAG", "onMarkerClick: "+clickCount);
         }

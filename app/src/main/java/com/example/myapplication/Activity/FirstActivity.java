@@ -11,6 +11,7 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -20,38 +21,34 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication.Class.GetDevice;
+import com.example.myapplication.Class.GetUser;
 import com.example.myapplication.R;
-import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
-import org.json.JSONObject;
-import java.io.IOException;
+
 import java.util.ArrayList;
 
 import me.itangqi.waveloadingview.WaveLoadingView;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.CAMERA;
 
-public class FirstActivity extends AppCompatActivity {
+public class FirstActivity extends AppCompatActivity{
 
     String jsontext,userjsontext,token;
     private int mInterval = 200;
     private Handler mHandler;
     WaveLoadingView waveView;
     int waterlevelratio=100;
-    int statuscode=0, statuscodeuser=0, runed =0;
+    int statuscode=0, statuscodeuser=0;
     private ArrayList<String> permissionsToRequest;
     private ArrayList<String> permissionsRejected = new ArrayList<>();
     private final static int ALL_PERMISSIONS_RESULT = 101;
     private ArrayList<String> permissionslist = new ArrayList<>();
     TextView button_retry;
     String user_id ,user_first_name ,user_last_name ,user_avatar ,user_email,user_mobile,user_created_at,user_updated_at;
+    boolean retry=false,runed=false, igonrerun =false;
+    Intent intentgetdevice,intentgetuser;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,7 +66,6 @@ public class FirstActivity extends AppCompatActivity {
                 requestPermissions(permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
         }
 
-
         waveView=(WaveLoadingView)findViewById(R.id.wave_view);
         button_retry=(TextView)findViewById(R.id.button_retry);
 
@@ -79,6 +75,8 @@ public class FirstActivity extends AppCompatActivity {
         String sharedprefencetoken = "";
         token= prefs.getString(sharedprefencetoken, "");
 
+        intentgetdevice = new Intent(this, GetDevice.class);
+        intentgetuser = new Intent(this, GetUser.class);
 
 
         if (!checkinternet()) {
@@ -90,21 +88,34 @@ public class FirstActivity extends AppCompatActivity {
             button_retry.setVisibility(View.GONE);
 
             if (token!=null){
-                getdevice();
+                if (!runed){
+                    getfrominternet();
+                }
+            }else if(token==null){
+                Intent intent = new Intent(FirstActivity.this, SignActivity.class);
+                startActivity(intent);
+                finish();
             }
             mHandler = new Handler();
             mStatusChecker.run();
         }
 
-
-
         button_retry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                if (retry){
+                    if (token!=null){
+                        getfrominternet();
+                    }
+                    mHandler = new Handler();
+                    mStatusChecker.run();
+                    button_retry.setVisibility(View.GONE);
+                }
                 if (checkinternet()){
                     if (token!=null){
-                        getdevice();
+                        getfrominternet();
+
                     }
                     mHandler = new Handler();
                     mStatusChecker.run();
@@ -115,123 +126,8 @@ public class FirstActivity extends AppCompatActivity {
                     waveView.setProgressValue(80);
                     Toast.makeText(getApplicationContext(),"Please Connect to The Internet and Try Agarin !", Toast.LENGTH_LONG).show();
                 }
-
-
             }
         });
-
-
-
-    }
-
-    private void getdevice(){
-
-        OkHttpClient client = new OkHttpClient();
-
-        Request request = new Request.Builder()
-                .url("http://smartflow.sensiran.com:8080/api/client/devices")
-                .get()
-                .addHeader("authorization", "Bearer "+token)
-                .addHeader("cache-control", "no-cache")
-                .addHeader("postman-token", "072fb14c-4f7d-a183-07ee-c5323addee1c")
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                jsontext=response.body().string();
-                if (jsontext != null) {
-                    try {
-                        JSONObject jsonObj = new JSONObject(jsontext);
-
-                        statuscode = jsonObj.getInt("status");
-                        getuser();
-                    } catch (final JSONException e) {
-                        Log.e("TAG", "Json parsing error: " + e.getMessage());
-
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                e.printStackTrace();
-            }
-
-        });
-
-    }
-
-    private void getuser(){
-
-        OkHttpClient client = new OkHttpClient();
-
-        Request request = new Request.Builder()
-                .url("http://smartflow.sensiran.com:8080/api/client/user")
-                .get()
-                .addHeader("authorization", "Bearer "+token)
-                .addHeader("cache-control", "no-cache")
-                .addHeader("postman-token", "072fb14c-4f7d-a183-07ee-c5323addee1c")
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                userjsontext=response.body().string();
-                if (userjsontext != null) {
-                    try {
-
-                        JSONObject jsonObj = new JSONObject(userjsontext);
-
-                        statuscodeuser = jsonObj.getInt("status");
-
-                        String userdata = jsonObj.getString("result");
-
-                        JSONObject jsonObj1 = new JSONObject(userdata);
-
-                        user_id = jsonObj1.getString("id");
-                        user_first_name = jsonObj1.getString("first_name");
-                        user_last_name = jsonObj1.getString("last_name");
-                        user_avatar = jsonObj1.getString("avatar");
-                        user_email = jsonObj1.getString("email");
-                        user_mobile = jsonObj1.getString("mobile");
-                        user_created_at = jsonObj1.getString("created_at");
-                        user_updated_at = jsonObj1.getString("updated_at");
-
-
-                    } catch (final JSONException e) {
-                        Log.e("TAG", "Json parsing error: " + e.getMessage());
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-//                                Toast.makeText(getApplicationContext(),
-//                                        "Json parsing error: " + e.getMessage(),
-//                                        Toast.LENGTH_LONG).show();
-                            }
-                        });
-
-                    }
-
-                } else {
-                    Log.e("TAG", "Couldn't get json from server.");
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-//                            Toast.makeText(getApplicationContext(),
-//                                    "Couldn't get json from server. Check LogCat for possible errors!",
-//                                    Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                e.printStackTrace();
-            }
-
-        });
-
     }
 
     Runnable mStatusChecker = new Runnable() {
@@ -243,13 +139,15 @@ public class FirstActivity extends AppCompatActivity {
                     waterlevelratio = waterlevelratio - 10;
                     waveView.setProgressValue(waterlevelratio);
                 }
-                else if(waterlevelratio<=-10 && runed==0){
-                    runed=1;
-                    gotomap();
+                else if(waterlevelratio<=-10){
+
+                    if (statuscode==200 && statuscodeuser==200) {
+                        if (!igonrerun) {
+                            gotomap();
+                        }
+                    }
                 }
             } finally {
-                // 100% guarantee that this always happens, even if
-                // your update method throws an exception
                 mHandler.postDelayed(mStatusChecker, mInterval);
             }
 
@@ -258,17 +156,24 @@ public class FirstActivity extends AppCompatActivity {
 
     private void gotomap(){
         Log.i("TAG", "gotomap: "+statuscode);
-        if (statuscode==200 && statuscodeuser==200) {
+
+        if (statuscode==200 && statuscodeuser==200 && !igonrerun) {
+            igonrerun =true;
             Intent intent = new Intent(FirstActivity.this, MainActivity.class);
             intent.putExtra("jsontext", jsontext);
-            intent.putExtra("user_id", user_id);
-            intent.putExtra("user_first_name", user_first_name);
-            intent.putExtra("user_last_name", user_last_name);
-            intent.putExtra("user_avatar", user_avatar);
-            intent.putExtra("user_email", user_email);
-            intent.putExtra("user_mobile", user_mobile);
-            intent.putExtra("user_created_at", user_created_at);
-            intent.putExtra("user_updated_at", user_updated_at);
+
+            try {
+                intent.putExtra("user_id", user_id);
+                intent.putExtra("user_first_name", user_first_name);
+                intent.putExtra("user_last_name", user_last_name);
+                intent.putExtra("user_avatar", user_avatar);
+                intent.putExtra("user_email", user_email);
+                intent.putExtra("user_mobile", user_mobile);
+                intent.putExtra("user_created_at", user_created_at);
+                intent.putExtra("user_updated_at", user_updated_at);
+            }catch (Exception e){
+                Log.i("TAG", "gotomap: "+e);
+            }
             startActivity(intent);
             finish();
 
@@ -276,9 +181,6 @@ public class FirstActivity extends AppCompatActivity {
             Intent intent = new Intent(FirstActivity.this, SignActivity.class);
             startActivity(intent);
             finish();
-        }
-        else {
-            Log.e("message", "failure");
         }
     }
 
@@ -379,5 +281,182 @@ public class FirstActivity extends AppCompatActivity {
             return false;
         }
     }
+    public class DataReciverDevice extends ResultReceiver {
 
+        public DataReciverDevice(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            super.onReceiveResult(resultCode, resultData);
+
+            Log.i("TAG", "onReceiveResult device: "+resultCode);
+            if (resultCode == GetDevice.Jsonsresult) {
+                jsontext=resultData.getString("jsontext");
+                statuscode=resultData.getInt("statuscode");
+
+                if (statuscode==401){
+                    Intent intent = new Intent(FirstActivity.this, SignActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }else if(resultCode==GetDevice.Jsonsresultnull ){
+
+            }
+
+        }
+    }
+
+    public class DataReciverUser extends ResultReceiver {
+
+        public DataReciverUser(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            super.onReceiveResult(resultCode, resultData);
+            Log.i("TAG", "onReceiveResult user: "+resultCode);
+
+            if (resultCode == GetUser.Jsonsresult) {
+                statuscodeuser=resultData.getInt("statuscodeuser");
+                Log.i("TAG", "onReceiveResult statuscodeuser: "+statuscodeuser);
+
+                user_id=resultData.getString("user_id");
+                user_first_name=resultData.getString("user_first_name");
+                user_last_name=resultData.getString("user_last_name");
+                user_avatar=resultData.getString("user_avatar");
+                user_email=resultData.getString("user_email");
+                user_mobile=resultData.getString("user_mobile");
+                user_created_at=resultData.getString("user_created_at");
+                user_updated_at=resultData.getString("user_updated_at");
+
+            }
+
+        }
+    }
+
+    private void getfrominternet(){
+        intentgetdevice.putExtra("url", "url of the file to download");
+        intentgetdevice.putExtra("receiver", new DataReciverDevice(new Handler()));
+        startService(intentgetdevice);
+
+        intentgetuser.putExtra("url", "url of the file to download");
+        intentgetuser.putExtra("receiver", new DataReciverUser(new Handler()));
+        startService(intentgetuser);
+
+        runed=true;
+    }
+
+//    private void getdevice(){
+//
+//        OkHttpClient client = new OkHttpClient();
+//
+//        Request request = new Request.Builder()
+//                .url("http://smartflow.sensiran.com:8080/api/client/devices")
+//                .get()
+//                .addHeader("authorization", "Bearer "+token)
+//                .addHeader("cache-control", "no-cache")
+//                .addHeader("postman-token", "072fb14c-4f7d-a183-07ee-c5323addee1c")
+//                .build();
+//
+//        client.newCall(request).enqueue(new Callback() {
+//            @Override
+//            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+//                jsontext=response.body().string();
+//                if (jsontext != null) {
+//                    try {
+//                        JSONObject jsonObj = new JSONObject(jsontext);
+//
+//                        statuscode = jsonObj.getInt("status");
+//                        getuser();
+//                    } catch (final JSONException e) {
+//                        Log.e("TAG", "Json parsing error: " + e.getMessage());
+//
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//        });
+//
+//    }
+//
+//    private void getuser(){
+//        Log.i("TAG", "onResponse: 11"+jsontext);
+//
+//        OkHttpClient client = new OkHttpClient();
+//
+//        Request request = new Request.Builder()
+//                .url("http://smartflow.sensiran.com:8080/api/client/user")
+//                .get()
+//                .addHeader("authorization", "Bearer "+token)
+//                .addHeader("cache-control", "no-cache")
+//                .addHeader("postman-token", "072fb14c-4f7d-a183-07ee-c5323addee1c")
+//                .build();
+//
+//        client.newCall(request).enqueue(new Callback() {
+//            @Override
+//            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+//                userjsontext=response.body().string();
+//                if (userjsontext != null) {
+//                    try {
+//
+//                        JSONObject jsonObj = new JSONObject(userjsontext);
+//
+//                        statuscodeuser = jsonObj.getInt("status");
+//
+//                        String userdata = jsonObj.getString("result");
+//
+//                        JSONObject jsonObj1 = new JSONObject(userdata);
+//
+//                        user_id = jsonObj1.getString("id");
+//                        user_first_name = jsonObj1.getString("first_name");
+//                        user_last_name = jsonObj1.getString("last_name");
+//                        user_avatar = jsonObj1.getString("avatar");
+//                        user_email = jsonObj1.getString("email");
+//                        user_mobile = jsonObj1.getString("mobile");
+//                        user_created_at = jsonObj1.getString("created_at");
+//                        user_updated_at = jsonObj1.getString("updated_at");
+//
+//
+//                    } catch (final JSONException e) {
+//                        Log.e("TAG", "Json parsing error: " + e.getMessage());
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+////                                Toast.makeText(getApplicationContext(),
+////                                        "Json parsing error: " + e.getMessage(),
+////                                        Toast.LENGTH_LONG).show();
+//                            }
+//                        });
+//
+//                    }
+//
+//                } else {
+//                    Log.e("TAG", "Couldn't get json from server.");
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+////                            Toast.makeText(getApplicationContext(),
+////                                    "Couldn't get json from server. Check LogCat for possible errors!",
+////                                    Toast.LENGTH_LONG).show();
+//                        }
+//                    });
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//        });
+//
+//    }
 }

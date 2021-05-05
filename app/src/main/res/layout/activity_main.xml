@@ -56,7 +56,7 @@
             app:wlv_waveColor="#11b6ed"/>
 
         <include
-            android:id="@+id/carinforelativelayout"
+            android:id="@+id/inforelativelayout"
             android:layout_width="match_parent"
             android:layout_height="130dp"
             android:layout_alignParentBottom="true"

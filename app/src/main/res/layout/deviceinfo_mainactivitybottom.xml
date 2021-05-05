@@ -7,7 +7,7 @@
 
 
     <ImageView
-        android:id="@+id/iv_close_carinfo_mainactivitybottom"
+        android:id="@+id/iv_close_info_mainactivitybottom"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:src="@android:drawable/ic_menu_close_clear_cancel"
@@ -16,12 +16,12 @@
         android:background="#ffff"/>
 
     <RelativeLayout
-        android:id="@+id/rl_carinfo_mainactivitybottom"
+        android:id="@+id/rl_info_mainactivitybottom"
         android:layout_width="match_parent"
         android:layout_height="130dp"
         android:layout_centerVertical="true"
-        android:layout_below="@+id/iv_close_carinfo_mainactivitybottom"
-        android:background="@drawable/style_carinfo_mainactivitybottom">
+        android:layout_below="@+id/iv_close_info_mainactivitybottom"
+        android:background="@drawable/style_info_mainactivitybottom">
 
 
         <LinearLayout
@@ -38,14 +38,14 @@
                 android:weightSum="3">
 
                 <LinearLayout
-                    android:id="@+id/lv_detail_car_detail"
+                    android:id="@+id/lv_detail_detail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:weightSum="3">
 
                     <TextView
-                        android:id="@+id/tv_detail_car_detail"
+                        android:id="@+id/tv_detail_detail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="clock"
@@ -54,7 +54,7 @@
                         android:textColor="#000000"
                         android:textAlignment="center"/>
                     <ImageView
-                        android:id="@+id/iv_detail_car_detail"
+                        android:id="@+id/iv_detail_detail"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:src="@drawable/clock_icon"
@@ -63,14 +63,14 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/lv_date_car_detail"
+                    android:id="@+id/lv_date_detail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:weightSum="3">
 
                     <TextView
-                        android:id="@+id/tv_date_car_detail"
+                        android:id="@+id/tv_date_detail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="value"
@@ -79,7 +79,7 @@
                         android:textColor="#000000"
                         android:textAlignment="center"/>
                     <ImageView
-                        android:id="@+id/iv_date_car_detail"
+                        android:id="@+id/iv_date_detail"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:src="@drawable/value_icon"
@@ -88,14 +88,14 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/lv_name_car_detail"
+                    android:id="@+id/lv_name_detail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:weightSum="3">
 
                     <TextView
-                        android:id="@+id/tv_name_car_detail"
+                        android:id="@+id/tv_name_detail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="battery"
@@ -104,7 +104,7 @@
                         android:textColor="#000000"
                         android:textAlignment="center"/>
                     <ImageView
-                        android:id="@+id/iv_name_car_detail"
+                        android:id="@+id/iv_name_detail"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:src="@drawable/battery_icon"

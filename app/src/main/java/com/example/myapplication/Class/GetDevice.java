@@ -1,35 +1,43 @@
 package com.example.myapplication.Class;
 
+import android.app.IntentService;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.os.ResultReceiver;
 import android.util.Log;
-import android.widget.Toast;
-
+import androidx.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
-
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class GetDevice {
-    String sharedprefencetoken = "";
+public class GetDevice extends IntentService {
     String jsontext,token;
     int statuscode=0;
-
-    public String getdevice(SharedPreferences sharedPreferences)
-
-    {
-
-        SharedPreferences prefs =sharedPreferences;
+    public static final int Jsonsresult = 1;
+    public static final int Jsonsresultnull = 10;
 
 
-        token = prefs.getString(sharedprefencetoken, "");
+    public GetDevice() {
+        super("getdevice");
+    }
+
+    @Override
+    protected void onHandleIntent(@Nullable Intent intent) {
+        ResultReceiver receiver = (ResultReceiver) intent.getParcelableExtra("receiver");
+
+        SharedPreferences prefs = this.getSharedPreferences(
+                "", Context.MODE_PRIVATE);
+
+        String sharedprefencetoken = "";
+        token= prefs.getString(sharedprefencetoken, "");
 
         if (token != null) {
 
@@ -48,21 +56,24 @@ public class GetDevice {
                 @Override
                 public void onResponse(@NotNull Call call, @NotNull Response response) throws
                         IOException {
-                    jsontext = response.body().string();
-
+                    jsontext=response.body().string();
+                    Log.i("TAG", "onResponse: "+jsontext);
                     if (jsontext != null) {
-
                         try {
                             JSONObject jsonObj = new JSONObject(jsontext);
 
                             statuscode = jsonObj.getInt("status");
 
+                            Bundle resultData = new Bundle();
+                            resultData.putString("jsontext" ,jsontext);
+                            resultData.putInt("statuscode" ,statuscode);
+                            receiver.send(Jsonsresult, resultData);
+
+
                         } catch (final JSONException e) {
                             Log.e("TAG", "Json parsing error: " + e.getMessage());
 
-
                         }
-
                     }
 
                 }
@@ -73,9 +84,16 @@ public class GetDevice {
                 }
 
             });
+            Bundle resultData = new Bundle();
+            resultData.putInt("progress" ,100);
         }
-        return jsontext;
+        else if(token==null){
+            Bundle resultData = new Bundle();
+            resultData.putInt("statuscode" ,0);
+            receiver.send(Jsonsresultnull, resultData);
+        }
 
     }
+
 
 }
