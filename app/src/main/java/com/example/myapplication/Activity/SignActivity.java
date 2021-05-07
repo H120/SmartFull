@@ -24,7 +24,7 @@ public class SignActivity extends AppCompatActivity {
     List id, name, title, duration;
     WaveLoadingView waveView;
     TabLayout tabLayout;
-    ViewPager viewPager;
+    public static ViewPager viewPager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

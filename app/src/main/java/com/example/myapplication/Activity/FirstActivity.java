@@ -155,7 +155,6 @@ public class FirstActivity extends AppCompatActivity{
     };
 
     private void gotomap(){
-        Log.i("TAG", "gotomap: "+statuscode);
 
         if (statuscode==200 && statuscodeuser==200 && !igonrerun) {
             igonrerun =true;
@@ -172,7 +171,7 @@ public class FirstActivity extends AppCompatActivity{
                 intent.putExtra("user_created_at", user_created_at);
                 intent.putExtra("user_updated_at", user_updated_at);
             }catch (Exception e){
-                Log.i("TAG", "gotomap: "+e);
+
             }
             startActivity(intent);
             finish();
@@ -291,7 +290,6 @@ public class FirstActivity extends AppCompatActivity{
         protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);
 
-            Log.i("TAG", "onReceiveResult device: "+resultCode);
             if (resultCode == GetDevice.Jsonsresult) {
                 jsontext=resultData.getString("jsontext");
                 statuscode=resultData.getInt("statuscode");
@@ -317,11 +315,9 @@ public class FirstActivity extends AppCompatActivity{
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);
-            Log.i("TAG", "onReceiveResult user: "+resultCode);
 
             if (resultCode == GetUser.Jsonsresult) {
                 statuscodeuser=resultData.getInt("statuscodeuser");
-                Log.i("TAG", "onReceiveResult statuscodeuser: "+statuscodeuser);
 
                 user_id=resultData.getString("user_id");
                 user_first_name=resultData.getString("user_first_name");
@@ -338,11 +334,9 @@ public class FirstActivity extends AppCompatActivity{
     }
 
     private void getfrominternet(){
-        intentgetdevice.putExtra("url", "url of the file to download");
         intentgetdevice.putExtra("receiver", new DataReciverDevice(new Handler()));
         startService(intentgetdevice);
 
-        intentgetuser.putExtra("url", "url of the file to download");
         intentgetuser.putExtra("receiver", new DataReciverUser(new Handler()));
         startService(intentgetuser);
 

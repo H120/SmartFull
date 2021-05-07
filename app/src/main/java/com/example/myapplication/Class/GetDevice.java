@@ -33,6 +33,7 @@ public class GetDevice extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
         ResultReceiver receiver = (ResultReceiver) intent.getParcelableExtra("receiver");
 
+
         SharedPreferences prefs = this.getSharedPreferences(
                 "", Context.MODE_PRIVATE);
 
@@ -57,7 +58,6 @@ public class GetDevice extends IntentService {
                 public void onResponse(@NotNull Call call, @NotNull Response response) throws
                         IOException {
                     jsontext=response.body().string();
-                    Log.i("TAG", "onResponse: "+jsontext);
                     if (jsontext != null) {
                         try {
                             JSONObject jsonObj = new JSONObject(jsontext);

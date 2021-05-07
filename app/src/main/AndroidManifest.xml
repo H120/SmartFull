@@ -58,6 +58,7 @@
             android:screenOrientation="portrait" />
         <service android:name=".Class.GetDevice"/>
         <service android:name=".Class.GetUser"/>
+        <service android:name=".Class.GetSignin"/>
 
     </application>
 

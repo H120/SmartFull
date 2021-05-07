@@ -1,9 +1,14 @@
 package com.example.myapplication.Fragment;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +18,14 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
+import com.example.myapplication.Activity.FirstActivity;
 import com.example.myapplication.Activity.MainActivity;
 import com.example.myapplication.Activity.SignActivity;
+import com.example.myapplication.Class.GetDevice;
+import com.example.myapplication.Class.GetSignin;
+import com.example.myapplication.Class.GetUser;
 import com.example.myapplication.R;
 
 import org.jetbrains.annotations.NotNull;
@@ -26,10 +36,8 @@ import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class SignInFragment extends Fragment {
@@ -38,27 +46,44 @@ public class SignInFragment extends Fragment {
     }
 
     String response, username, password, fcm_token, token, jsontext;
-    SharedPreferences prefs;
+    Intent intentgetsignin;
+    ProgressDialog progressDialog;
+    AlertDialog alertDialog;
+    Intent intentgetdevice, intentgetuser;
+    int statuscode = 0, statuscodeuser = 0;
+    String user_id, user_first_name, user_last_name, user_avatar, user_email, user_mobile, user_created_at, user_updated_at;
+    boolean igonrerun = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View myView = inflater.inflate(R.layout.fragment_signin, container, false);
 
-        prefs = getContext().getSharedPreferences(
-                "", Context.MODE_PRIVATE);
-
         Button signin_button = myView.findViewById(R.id.signin_button);
         EditText signin_username = myView.findViewById(R.id.signin_username);
         EditText signin_password = myView.findViewById(R.id.signin_password);
+        intentgetsignin = new Intent(getActivity(), GetSignin.class);
+
+        intentgetdevice = new Intent(getActivity(), GetDevice.class);
+        intentgetuser = new Intent(getActivity(), GetUser.class);
 
         signin_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                progressDialog = new ProgressDialog(getActivity());
+                progressDialog.setTitle("Please Wait");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+
                 username = signin_username.getText().toString();
                 password = signin_password.getText().toString();
                 fcm_token = "ssss";
-                sign_in();
+
+                intentgetsignin.putExtra("username", username);
+                intentgetsignin.putExtra("password", password);
+                intentgetsignin.putExtra("receiver", new DataReciverSignin(new Handler()));
+                getActivity().startService(intentgetsignin);
             }
         });
 
@@ -66,152 +91,145 @@ public class SignInFragment extends Fragment {
 
     }
 
-    private void sign_in()
-    {
+    public class DataReciverSignin extends ResultReceiver {
 
-        OkHttpClient client = new OkHttpClient();
+        public DataReciverSignin(Handler handler) {
+            super(handler);
+        }
 
-        MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, "{\r\n    \"email\": \""+username+"\",\r\n    \"password\": \""+password+"\",\r\n    \"fcm_token\": \"ssss\"\r\n}");
-        Request request = new Request.Builder()
-                .url("http://smartflow.sensiran.com:8080/api/client/authentication/login")
-                .post(body)
-                .addHeader("accept", "application/json")
-                .addHeader("content-type", "application/json")
-                .addHeader("authorization", "{{client_token}}")
-                .addHeader("cache-control", "no-cache")
-                .addHeader("postman-token", "8deec5e0-6522-1d78-7577-98f0168925b7")
-                .build();
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            super.onReceiveResult(resultCode, resultData);
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                String s=response.body().string();
-                fetchlogin(s);
-            }
+            if (resultCode == GetSignin.Jsonsresult) {
+                jsontext = resultData.getString("jsontext");
+                int statuscode = resultData.getInt("statuscode");
+                switch (statuscode) {
+                    case 200:
 
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                e.printStackTrace();
+                        intentgetdevice.putExtra("receiver", new DataReciverDevice(new Handler()));
+                        getActivity().startService(intentgetdevice);
 
-            }
-        });
-    }
+                        intentgetuser.putExtra("receiver", new DataReciverUser(new Handler()));
+                        getActivity().startService(intentgetuser);
 
+                        break;
+                    case 404:
+                        progressDialog.dismiss();
+                        alertDialog = new AlertDialog.Builder(getActivity())
+                                .setTitle("Result")
+                                .setMessage("Wrong User Pass")
 
-    private String fetchlogin(String json){
-
-        if (json != null) {
-            Log.i("TAG", "fetchlogin 2: "+json);
-
-            try {
-                JSONObject jsonObj = new JSONObject(json);
-                int statuscode = jsonObj.getInt("status");
-
-                if (statuscode==200) {
-
-                    JSONObject data = jsonObj.getJSONObject("result");
-                    String jsontoken = data.optString("token");
-                    Log.i("TAG", "fetchlogin: "+jsontoken);
-
-                    token=jsontoken;
-                    String sharedprefencetoken = "";
-                    prefs.edit().putString(sharedprefencetoken, token).apply();
-
-                    getdevice();
+                                // Specifying a listener allows you to take an action before dismissing the dialog.
+                                // The dialog is automatically dismissed when a dialog button is clicked.
+                                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // Continue with delete operation
+                                    }
+                                }).setNegativeButton("Forget Password", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        SignActivity.viewPager.setCurrentItem(2);
+                                    }
+                                })
 
 
-                } else {
-                    Log.e("message", "failure");
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+
+                        break;
+                    case 400:
+                        progressDialog.dismiss();
+                        Toast.makeText(getActivity(), "Wrong", Toast.LENGTH_LONG).show();
+                        break;
                 }
 
-            } catch (final JSONException e) {
-                Log.e("TAG", "Json parsing error: " + e.getMessage());
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getActivity(),
-                                "Json parsing error: " + e.getMessage(),
-                                Toast.LENGTH_LONG).show();
-                    }
-                });
+            } else if (resultCode == GetDevice.Jsonsresultnull) {
 
             }
-
-        } else {
-            Log.e("TAG", "Couldn't get json from server.");
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(getActivity(),
-                            "Couldn't get json from server. Check LogCat for possible errors!",
-                            Toast.LENGTH_LONG).show();
-                }
-            });
 
         }
-        return token;
     }
 
-    private void getdevice(){
+    public class DataReciverDevice extends ResultReceiver {
 
-        OkHttpClient client = new OkHttpClient();
+        public DataReciverDevice(Handler handler) {
+            super(handler);
+        }
 
-        Request request = new Request.Builder()
-                .url("http://smartflow.sensiran.com:8080/api/client/devices")
-                .get()
-                .addHeader("authorization", "Bearer "+token)
-                .addHeader("cache-control", "no-cache")
-                .addHeader("postman-token", "072fb14c-4f7d-a183-07ee-c5323addee1c")
-                .build();
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            super.onReceiveResult(resultCode, resultData);
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                jsontext=response.body().string();
-                if (jsontext != null) {
+            if (resultCode == GetDevice.Jsonsresult) {
+                jsontext = resultData.getString("jsontext");
+                statuscode = resultData.getInt("statuscode");
 
-                    try {
-                        JSONObject jsonObj = new JSONObject(jsontext);
-
-                        int statuscode = jsonObj.getInt("status");
-
-                        if (statuscode==200) {
-
-                            Intent intent = new Intent(getActivity(), MainActivity.class);
-                            intent.putExtra("jsontext", jsontext);
-//                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP );
-                            startActivity(intent);
-                            getActivity().finish();
-                        }
-                        else {
-                            Log.e("message", "failure");
-                        }
-
-                    } catch (final JSONException e) {
-                        Log.e("TAG", "Json parsing error: " + e.getMessage());
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(getActivity(),
-                                        "Json parsing error: " + e.getMessage(),
-                                        Toast.LENGTH_LONG).show();
-                            }
-                        });
-
-                    }
+                if (statuscode == 401) {
 
                 }
+            } else if (resultCode == GetDevice.Jsonsresultnull) {
 
             }
 
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                e.printStackTrace();
-            }
-
-        });
-
+        }
     }
 
+    public class DataReciverUser extends ResultReceiver {
+
+        public DataReciverUser(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            super.onReceiveResult(resultCode, resultData);
+
+            if (resultCode == GetUser.Jsonsresult) {
+                statuscodeuser = resultData.getInt("statuscodeuser");
+
+                user_id = resultData.getString("user_id");
+                user_first_name = resultData.getString("user_first_name");
+                user_last_name = resultData.getString("user_last_name");
+                user_avatar = resultData.getString("user_avatar");
+                user_email = resultData.getString("user_email");
+                user_mobile = resultData.getString("user_mobile");
+                user_created_at = resultData.getString("user_created_at");
+                user_updated_at = resultData.getString("user_updated_at");
+
+                gotomap();
+
+            }
+
+        }
+    }
+
+    private void gotomap() {
+
+        if (statuscode == 200 && statuscodeuser == 200 && !igonrerun) {
+            igonrerun = true;
+            Intent intent = new Intent(getActivity(), MainActivity.class);
+            intent.putExtra("jsontext", jsontext);
+
+            try {
+                intent.putExtra("user_id", user_id);
+                intent.putExtra("user_first_name", user_first_name);
+                intent.putExtra("user_last_name", user_last_name);
+                intent.putExtra("user_avatar", user_avatar);
+                intent.putExtra("user_email", user_email);
+                intent.putExtra("user_mobile", user_mobile);
+                intent.putExtra("user_created_at", user_created_at);
+                intent.putExtra("user_updated_at", user_updated_at);
+            } catch (Exception e) {
+
+            }
+            startActivity(intent);
+            getActivity().finish();
+
+        } else if (statuscode == 401) {
+            Intent intent = new Intent(getActivity(), SignActivity.class);
+            startActivity(intent);
+            getActivity().finish();
+        }
+    }
 }

@@ -1,8 +1,8 @@
 package com.example.myapplication.Fragment;
 
+import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
-import com.example.myapplication.Activity.MainActivity;
 import com.example.myapplication.R;
 
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +38,7 @@ public class ForgetFragment extends Fragment {
     }
 
     String email;
+    static AlertDialog alertDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -99,16 +99,19 @@ public class ForgetFragment extends Fragment {
             try {
                 JSONObject jsonObj = new JSONObject(json);
 
-                String statuscode = jsonObj.getString("status");
+                int statuscode = jsonObj.getInt("status");
                 String message = jsonObj.getString("message");
                 Log.i("TAG", "fetchlogin json: "+statuscode);
 
                 switch (statuscode){
-                    case "200":
-                        backgroundThreadShortToast(getActivity(),"We Send Email Soon!");
+                    case 200:
+                        backgroundThreadShortAlertdialog(getActivity(),"We Send Email Soon!");
                         break;
-                    case "429":
-                        backgroundThreadShortToast(getActivity(),message);
+                    case 429:
+                        backgroundThreadShortAlertdialog(getActivity(),message);
+                        break;
+                    case 400:
+                        backgroundThreadShortAlertdialog(getActivity(),message);
                         break;
                 }
 
@@ -117,6 +120,7 @@ public class ForgetFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+
                         Toast.makeText(getActivity(),
                                 "Json parsing error: " + e.getMessage(),
                                 Toast.LENGTH_LONG).show();
@@ -138,14 +142,26 @@ public class ForgetFragment extends Fragment {
 
         }
     }
-    public static void backgroundThreadShortToast(final Context context,
-                                                  final String msg) {
-        if (context != null && msg != null) {
+    public static void backgroundThreadShortAlertdialog(final Context context,
+                                                        final String message) {
+        if (context != null && message != null) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
 
                 @Override
                 public void run() {
-                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+                    alertDialog = new AlertDialog.Builder(context)
+                            .setTitle("Result")
+                            .setMessage(message)
+
+                            // Specifying a listener allows you to take an action before dismissing the dialog.
+                            // The dialog is automatically dismissed when a dialog button is clicked.
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Continue with delete operation
+                                }
+                            }).setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+
                 }
             });
         }
