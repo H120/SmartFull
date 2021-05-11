@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:weightSum="2"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginTop="60dp">
+
+        <FrameLayout
+            android:id="@+id/frame_progressview"
+            android:layout_width="match_parent"
+            android:layout_height="190dp"
+            android:layout_alignParentLeft="true"
+            android:layout_weight="1">
+
+            <com.timqi.sectorprogressview.ColorfulRingProgressView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/colorfulRingProgressView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:bgColor="#e1e1e1"
+                app:fgColorEnd="#ff4800"
+                app:fgColorStart="#ffe400"
+                app:percent="0"
+                app:startAngle="0"
+                app:strokeWidth="15dp"/>
+
+            <TextView
+                android:id="@+id/tv_moredetail_percent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textAlignment="center"
+                android:textColor="#000"
+                android:text="test"
+                android:textSize="22sp" />
+        </FrameLayout>
+
+        <RelativeLayout
+            android:id="@+id/frame_detailtext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_toLeftOf="@+id/frame_progressview"
+            android:background="@drawable/style_info_moredetail"
+            android:layout_weight="1">
+
+            <ScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_margin="5dp">
+
+                    <TextView
+                        android:id="@+id/tv_moredetail_created_at"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textAlignment="center"
+                        android:textColor="#000"
+                        android:text="N/A"
+                        android:textSize="22sp" />
+
+                    <TextView
+                        android:id="@+id/tv_moredetail_current_identity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textAlignment="center"
+                        android:textColor="#000"
+                        android:text="N/A"
+                        android:textSize="22sp" />
+
+                    <TextView
+                        android:id="@+id/tv_moredetail_current_lat"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textAlignment="center"
+                        android:textColor="#000"
+                        android:text="N/A"
+                        android:textSize="22sp" />
+
+                    <TextView
+                        android:id="@+id/tv_moredetail_current_lon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textAlignment="center"
+                        android:textColor="#000"
+                        android:text="N/A"
+                        android:textSize="22sp" />
+
+                    <TextView
+                        android:id="@+id/tv_moredetail_current_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textAlignment="center"
+                        android:textColor="#000"
+                        android:text="N/A"
+                        android:textSize="22sp" />
+
+                    <TextView
+                        android:id="@+id/tv_moredetail_current_updated_at"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textAlignment="center"
+                        android:textColor="#000"
+                        android:text="N/A"
+                        android:textSize="22sp" />
+
+                </LinearLayout>
+            </ScrollView>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+</RelativeLayout>

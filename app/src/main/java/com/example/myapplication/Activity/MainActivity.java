@@ -162,7 +162,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View v)
             {
+                Intent intent_moredetailactivity=new Intent(MainActivity.this,MoreDetailActivity.class);
+                intent_moredetailactivity.putExtra("current_created_at",current_created_at);
+                intent_moredetailactivity.putExtra("current_id",current_id);
+                intent_moredetailactivity.putExtra("current_identity",current_identity);
+                intent_moredetailactivity.putExtra("current_lat",current_lat);
+                intent_moredetailactivity.putExtra("current_lon",current_lon);
+                intent_moredetailactivity.putExtra("current_log",current_log);
+                intent_moredetailactivity.putExtra("current_name",current_name);
+                intent_moredetailactivity.putExtra("current_updated_at",current_updated_at);
 
+                startActivity(intent_moredetailactivity);
             }
         });
 
