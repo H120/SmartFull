@@ -59,6 +59,7 @@
         <service android:name=".Class.GetDevice"/>
         <service android:name=".Class.GetUser"/>
         <service android:name=".Class.GetSignin"/>
+        <service android:name=".Class.DeleteDevice"/>
 
     </application>
 

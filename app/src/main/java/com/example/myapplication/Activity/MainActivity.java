@@ -7,6 +7,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.app.AlertDialog;
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,6 +16,8 @@ import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +32,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.budiyev.android.codescanner.CodeScanner;
+import com.example.myapplication.Class.DeleteDevice;
+import com.example.myapplication.Class.GetDevice;
+import com.example.myapplication.Class.GetUser;
 import com.example.myapplication.Item.JsonItem;
 import com.example.myapplication.Class.LocationTrack;
 import com.example.myapplication.Fragment.QRScannerFragment;
@@ -65,19 +71,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     RelativeLayout info_relativelayout;
     TextView tv_detail_detail, tv_date_detail, tv_name_detail, tv_degree_detail,
             tv_speed_detail, tv_online_detail, tv_door_detail;
-    int open_info_speed;
+    int open_info_speed,currentmarkerselected,statuscode;
     RelativeLayout rl_info_mainactivitybottom;
     boolean info_layout_is_open = false;
-    ImageView iv_close_info_mainactivitybottom;
+    ImageView iv_close_info_mainactivitybottom,iv_more_info_mainactivitybottom;
     String current_id, current_name, current_log, current_identity,current_created_at, current_updated_at;
     double current_lat,current_lon;
     private long pressedTime;
     String user_id ,user_first_name ,user_last_name ,user_avatar ,user_email,user_mobile,user_created_at,user_updated_at;
     TextView textview_user_id ,textview_user_first_name ,textview_user_last_name ,
-            textview_user_email,textview_user_mobile,textview_user_created_at,textview_user_updated_at;
+            textview_user_email,textview_user_mobile;
 
     ImageView imageview_user_avatar;
     LinearLayout ll_delete_device;
+    Intent intentdeletedevice;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         tv_detail_detail = (TextView) findViewById(R.id.tv_detail_detail);
         rl_info_mainactivitybottom = (RelativeLayout) findViewById(R.id.rl_info_mainactivitybottom);
         iv_close_info_mainactivitybottom = (ImageView) findViewById(R.id.iv_close_info_mainactivitybottom);
+        iv_more_info_mainactivitybottom = (ImageView) findViewById(R.id.iv_more_info_mainactivitybottom);
         ll_delete_device = (LinearLayout) findViewById(R.id.ll_delete_device);
 
         setuserdata();
@@ -146,6 +155,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     info_layout_is_open = false;
                     rl_info_mainactivitybottom.setClickable(false);
                 }
+            }
+        });
+
+        iv_more_info_mainactivitybottom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+
             }
         });
 
@@ -185,8 +202,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ll_delete_device.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this);
+                builder1.setMessage("You sure ?\n \" "+ current_name+" \" ");
+                builder1.setCancelable(true);
+                builder1.setPositiveButton("Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                //put your code that needed to be executed when okay is clicked
+                                delete_device();
 
-                delete_device();
+                                dialog.cancel();
+
+                            }
+                        });
+                builder1.setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+                AlertDialog alert11 = builder1.create();
+                alert11.show();
 
             }
         });
@@ -283,6 +320,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
                     Log.i("TAG", "fetchdevices lat: "+geometry.substring(1,geometry.indexOf(",")));
+                    Log.i("TAG", "fetchdevices id: "+id+"|"+identity);
                     try {
                         Log.i("TAG", "fetchdevices lon: "+geometry.substring(geometry.indexOf(",")+1,geometry.length()-2)+"");
 
@@ -496,15 +534,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public boolean onMarkerClick(Marker marker) {
         // Retrieve the data from the marker.
-        Integer clickCount = (Integer) marker.getTag();
-        if (clickCount != null) {
-            current_id = markerList.get(clickCount).id;
-            current_name = markerList.get(clickCount).name;
-            current_log=markerList.get(clickCount).log;
-            current_lat=markerList.get(clickCount).lat;
-            current_lon=markerList.get(clickCount).lon;
-            current_created_at=markerList.get(clickCount).created_at;
-            current_updated_at=markerList.get(clickCount).updated_at;
+        Integer currentmarker = (Integer) marker.getTag();
+        if (currentmarker != null) {
+            current_id = markerList.get(currentmarker).id;
+            current_name = markerList.get(currentmarker).name;
+            current_log=markerList.get(currentmarker).log;
+            current_lat=markerList.get(currentmarker).lat;
+            current_lon=markerList.get(currentmarker).lon;
+            current_created_at=markerList.get(currentmarker).created_at;
+            current_updated_at=markerList.get(currentmarker).updated_at;
+            currentmarkerselected =currentmarker;
 
             if (info_layout_is_open)
             {
@@ -513,7 +552,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             {
                 Openinfobottomwithanimation();
             }
-            Log.i("TAG", "onMarkerClick: "+clickCount);
+            Log.i("TAG", "onMarkerClick: "+currentmarker);
         }
         return false;
     }
@@ -597,26 +636,39 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void delete_device(){
 
-        AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this);
-        builder1.setMessage("You sure ?\n \" "+ current_name+" \" ");
-        builder1.setCancelable(true);
-        builder1.setPositiveButton("Yes",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        //put your code that needed to be executed when okay is clicked
-                        dialog.cancel();
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Please Wait");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
 
-                    }
-                });
-        builder1.setNegativeButton("Cancel",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
+        intentdeletedevice = new Intent(this, DeleteDevice.class);
+        intentdeletedevice.putExtra("receiver", new DataReciverDelete(new Handler()));
+        intentdeletedevice.putExtra("deletedeviceid", current_id);
+        startService(intentdeletedevice);
 
-        AlertDialog alert11 = builder1.create();
-        alert11.show();
+    }
 
+    public class DataReciverDelete extends ResultReceiver {
+
+        public DataReciverDelete(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            super.onReceiveResult(resultCode, resultData);
+            if (resultCode == DeleteDevice.Jsonsresult) {
+                statuscode=resultData.getInt("statuscode");
+                Log.i("TAG", "onReceiveResult: "+statuscode);
+                if (statuscode==200){
+                    Closeinfobottomwithanimation(true, true);
+                    markerList.remove(currentmarkerselected);
+                    mMap.clear();
+                    setmarkers();
+                    progressDialog.dismiss();
+
+                }
+            }
+        }
     }
 }
