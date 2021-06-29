@@ -103,6 +103,7 @@ public class SignInFragment extends Fragment {
 
             if (resultCode == GetSignin.Jsonsresult) {
                 jsontext = resultData.getString("jsontext");
+
                 int statuscode = resultData.getInt("statuscode");
                 switch (statuscode) {
                     case 200:
@@ -115,6 +116,7 @@ public class SignInFragment extends Fragment {
 
                         break;
                     case 404:
+
                         progressDialog.dismiss();
                         alertDialog = new AlertDialog.Builder(getActivity())
                                 .setTitle("Result")

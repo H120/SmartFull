@@ -76,7 +76,7 @@ public class SignUpFragment extends Fragment {
                 "\"email\": \""+email+"\",\r\n    \"password\": \""+password+"\",\r\n    \"password_confirmation\": \""+password_confirmation+"\",\r\n    " +
                 "\"mobile\": \""+mobile+"\"\r\n}");
         Request request = new Request.Builder()
-                .url("http://smartflow.sensiran.com:8080/api/client/authentication/register")
+                .url("http://smartflow.sensiran.com:8585/api/client/authentication/register")
                 .post(body)
                 .addHeader("accept", "application/json")
                 .addHeader("content-type", "application/json")

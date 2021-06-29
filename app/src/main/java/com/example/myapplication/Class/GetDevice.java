@@ -46,7 +46,7 @@ public class GetDevice extends IntentService {
             OkHttpClient client = new OkHttpClient();
 
             Request request = new Request.Builder()
-                    .url("http://smartflow.sensiran.com:8080/api/client/devices")
+                    .url("http://smartflow.sensiran.com:8585/api/client/devices")
                     .get()
                     .addHeader("authorization", "Bearer " + token)
                     .addHeader("cache-control", "no-cache")

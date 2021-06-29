@@ -368,7 +368,7 @@ public class FirstActivity extends AppCompatActivity{
 //        OkHttpClient client = new OkHttpClient();
 //
 //        Request request = new Request.Builder()
-//                .url("http://smartflow.sensiran.com:8080/api/client/devices")
+//                .url("http://smartflow.sensiran.com:8585/api/client/devices")
 //                .get()
 //                .addHeader("authorization", "Bearer "+token)
 //                .addHeader("cache-control", "no-cache")
@@ -407,7 +407,7 @@ public class FirstActivity extends AppCompatActivity{
 //        OkHttpClient client = new OkHttpClient();
 //
 //        Request request = new Request.Builder()
-//                .url("http://smartflow.sensiran.com:8080/api/client/user")
+//                .url("http://smartflow.sensiran.com:8585/api/client/user")
 //                .get()
 //                .addHeader("authorization", "Bearer "+token)
 //                .addHeader("cache-control", "no-cache")

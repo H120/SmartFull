@@ -64,7 +64,7 @@ public class ResetpasswordFragment  extends Fragment {
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, "{\r\n    \"email\": \"" + email + "\"\r\n}");
         Request request = new Request.Builder()
-                .url("http://smartflow.sensiran.com:8080/api/client/authentication/forgot_password")
+                .url("http://smartflow.sensiran.com:8585/api/client/authentication/forgot_password")
                 .post(body)
                 .addHeader("accept", "application/json")
                 .addHeader("content-type", "application/json")

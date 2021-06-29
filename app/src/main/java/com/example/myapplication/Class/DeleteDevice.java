@@ -56,7 +56,7 @@ public class DeleteDevice extends IntentService {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url("http://smartflow.sensiran.com:8080/api/client/devices/"+deletedeviceid)
+                .url("http://smartflow.sensiran.com:8585/api/client/devices/"+deletedeviceid)
                 .delete()
                 .addHeader("acce1pt", "application/json")
                 .addHeader("content-type", "application/json")

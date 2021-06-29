@@ -132,7 +132,7 @@ public class AddDeviceActivity extends AppCompatActivity implements QRScannerFra
                 "\",\r\n    \"lon\": "+text_adddevice_longitude.getText().toString()+",\r\n    \"lat\": "+text_adddevice_latitude.getText().toString()+"\r\n}");
 
         Request request = new Request.Builder()
-                .url("http://smartflow.sensiran.com:8080/api/client/devices")
+                .url("http://smartflow.sensiran.com:8585/api/client/devices")
                 .post(body)
                 .addHeader("accept", "application/json")
                 .addHeader("content-type", "application/json")
@@ -234,7 +234,7 @@ public class AddDeviceActivity extends AppCompatActivity implements QRScannerFra
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url("http://smartflow.sensiran.com:8080/api/client/devices")
+                .url("http://smartflow.sensiran.com:8585/api/client/devices")
                 .get()
                 .addHeader("authorization", "Bearer "+token)
                 .addHeader("cache-control", "no-cache")
