@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.myapplication.R;
 import com.timqi.sectorprogressview.ColorfulRingProgressView;
 
+import me.itangqi.waveloadingview.WaveLoadingView;
+
 public class MoreDetailActivity extends AppCompatActivity {
 
     ColorfulRingProgressView colorfulRingProgressView;
@@ -16,6 +18,7 @@ public class MoreDetailActivity extends AppCompatActivity {
     TextView tv_moredetail_created_at,tv_moredetail_current_identity,tv_moredetail_current_lat,tv_moredetail_current_lon,tv_moredetail_current_name,
             tv_moredetail_current_updated_at;
     double current_lat,current_lon;
+    WaveLoadingView wave_view_moredetail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,9 +33,10 @@ public class MoreDetailActivity extends AppCompatActivity {
         current_log = getIntent().getStringExtra("current_log");
         current_name = getIntent().getStringExtra("current_name");
         current_updated_at = getIntent().getStringExtra("current_updated_at");
+        wave_view_moredetail=(WaveLoadingView)findViewById(R.id.wave_view_moredetail);
 
         tv_moredetail_percent=(TextView) findViewById(R.id.tv_moredetail_percent);
-        colorfulRingProgressView=(ColorfulRingProgressView)findViewById(R.id.colorfulRingProgressView);
+//        colorfulRingProgressView=(ColorfulRingProgressView)findViewById(R.id.colorfulRingProgressView);
 
         tv_moredetail_created_at=(TextView) findViewById(R.id.tv_moredetail_created_at) ;
         tv_moredetail_current_identity=(TextView) findViewById(R.id.tv_moredetail_current_identity) ;
@@ -50,7 +54,8 @@ public class MoreDetailActivity extends AppCompatActivity {
         tv_moredetail_current_updated_at.setText(current_name);
         tv_moredetail_current_updated_at.setText(current_updated_at);
 
-        colorfulRingProgressView.setPercent(75);
+//        colorfulRingProgressView.setPercent(75);
         tv_moredetail_percent.setText("75%\nof Water");
+        wave_view_moredetail.setProgressValue(75);
     }
 }

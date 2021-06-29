@@ -10,9 +10,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,7 +37,7 @@ import static android.Manifest.permission.CAMERA;
 
 public class FirstActivity extends AppCompatActivity{
 
-    String jsontext,userjsontext,token;
+    String jsontext,token;
     private int mInterval = 200;
     private Handler mHandler;
     WaveLoadingView waveView;
@@ -49,6 +51,8 @@ public class FirstActivity extends AppCompatActivity{
     String user_id ,user_first_name ,user_last_name ,user_avatar ,user_email,user_mobile,user_created_at,user_updated_at;
     boolean retry=false,runed=false, igonrerun =false;
     Intent intentgetdevice,intentgetuser;
+    Toast toast;
+    String toast_tryagain="Please Connect to The Internet and Try Again !" ;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -77,12 +81,13 @@ public class FirstActivity extends AppCompatActivity{
 
         intentgetdevice = new Intent(this, GetDevice.class);
         intentgetuser = new Intent(this, GetUser.class);
-
+        toast=Toast.makeText(getApplicationContext(),toast_tryagain,Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.TOP,0,0);
 
         if (!checkinternet()) {
             button_retry.setVisibility(View.VISIBLE);
             waveView.setProgressValue(80);
-            Toast.makeText(this, "Please Connect to The Internet and Try Agarin !", Toast.LENGTH_LONG).show();
+            toast.show();
 
         }else {
             button_retry.setVisibility(View.GONE);
@@ -124,7 +129,7 @@ public class FirstActivity extends AppCompatActivity{
                 }else{
                     button_retry.setVisibility(View.VISIBLE);
                     waveView.setProgressValue(80);
-                    Toast.makeText(getApplicationContext(),"Please Connect to The Internet and Try Agarin !", Toast.LENGTH_LONG).show();
+                    toast.show();
                 }
             }
         });
@@ -291,6 +296,7 @@ public class FirstActivity extends AppCompatActivity{
         protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);
 
+
             if (resultCode == GetDevice.Jsonsresult) {
                 jsontext=resultData.getString("jsontext");
                 statuscode=resultData.getInt("statuscode");
@@ -335,6 +341,19 @@ public class FirstActivity extends AppCompatActivity{
     }
 
     private void getfrominternet(){
+
+        new CountDownTimer(5000, 1000){
+            public void onTick(long millisUntilFinished){
+            }
+            public  void onFinish(){
+                if (jsontext==null){
+                    button_retry.setVisibility(View.VISIBLE);
+                    waveView.setProgressValue(80);
+                    toast.show();
+                }
+            }
+        }.start();
+
         intentgetdevice.putExtra("receiver", new DataReciverDevice(new Handler()));
         startService(intentgetdevice);
 

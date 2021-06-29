@@ -58,6 +58,7 @@ public class GetDevice extends IntentService {
                 public void onResponse(@NotNull Call call, @NotNull Response response) throws
                         IOException {
                     jsontext=response.body().string();
+
                     if (jsontext != null) {
                         try {
                             JSONObject jsonObj = new JSONObject(jsontext);
